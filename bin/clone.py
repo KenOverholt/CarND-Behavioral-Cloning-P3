@@ -30,6 +30,7 @@ for image,measurement in zip(images, measurements):
   
 X_train = np.array(augmented_images)
 y_train = np.array(augmented_measurements)
+print("X_train.shape: ", X_train.shape)
 
 from keras.models import Sequential, Model
 from keras.layers import Flatten, Dense, Lambda, Cropping2D
