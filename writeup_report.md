@@ -44,7 +44,7 @@ Using the Udacity provided simulator and my drive.py file, the car can be driven
 ```sh
 python drive.py model.h5
 ```
-After training with the current data set, the first autonomous drive complete 1+ full lap successfully.  Later runs occasionally got stuck but some have also successfully completed a full lap so, of course, the model could be improved.
+After training with the current data set, the first autonomous drive completed 1+ full laps successfully.  Later runs occasionally got stuck but some have also successfully completed a full lap so the model works but could use further improvement.
 
 #### 3. Submission code is usable and readable
 
@@ -56,11 +56,11 @@ The model.py file contains the code for training and saving the convolution neur
 
 My model is the NVIDIA architecture consisting of 5 convolutional layers from 24 to 64 followed by a flattening layer and then 4 dense layers with sized 100, 50, 10, and l (model.py lines 51-60) 
 
-The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 51-55), and the data is normalized in the model using a Keras lambda layer (code line 45). 
+The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 51-55) and the data is normalized in the model using a Keras lambda layer (code line 45). 
 
 #### 2. Attempts to reduce overfitting in the model
 
-Epochs were kept down to 5 (code line 63) keeping the validation loss from rising in order to reduce overfitting. 
+Epochs were kept low at 3 to 5 (code line 63) depending on the training session.  This kept the validation loss from rising in order to reduce overfitting. 
 
 The model was trained and validated on different data sets (80/20 split) to ensure that the model was not overfitting (code line 63). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
@@ -70,11 +70,13 @@ The model used an adam optimizer, so the learning rate was not tuned manually (m
 
 #### 4. Appropriate training data
 
-I chose training data attempting to keep the vehicle driving on the road. I tried multiple variations of training data. My initial set was created by just attempting to drive as best I could to get around the track while staying on it.  I also tried with my initial set and cropping the images to reduce the noise.
+I chose training data attempting to keep the vehicle driving on the road. I tried multiple variations of training data.
 
-I tried adding a lap swerving from side to side attempting to give the network examples of how to correct when veering off course.  I added a lap of data running in the opposite direction.  I used the Unity engine to modify track 1 by adding white & red stripes to the edge of the track and I gathered a data set on that custom track.
+My initial set was created by just attempting to drive as best I could to get around the track while staying on it.  At one point I started cropping the images to reduce the noise.  The network was able to focus on the parts of the image that contributed to steering.
 
-My final set was 1.5 laps around the track swerving from side to side not getting to wild in the areas with no edges on the track.
+Next I tried adding a lap swerving from side to side attempting to give the network examples of how to correct when veering off course.  I also added a lap of data running in the opposite direction.  For another set of data, I used the Unity engine to modify track one by adding white & red stripes to the edge of the track and I gathered a data set on that custom track.
+
+My final, working set consisted of 1.5 laps around the track mildly swerving from side to side with some driving down the center and, at the spots where the cement curb disappeared, I swerved away from the dirt edge making sure to provide samples indicating dirt edges are to be avoided.
 
 ### Model Architecture and Training Strategy
 
@@ -82,9 +84,9 @@ My final set was 1.5 laps around the track swerving from side to side not gettin
 
 The overall strategy for deriving a model architecture was to try use a proven architecture and then, if necessary, modify a layer or two.  I ended up not needing to modify it.
 
-My first step was to try LeNet because that worked will in the sign classification and is a well-known architecture.
+My first step was to try LeNet because that worked well in the sign classification project and is a well-known architecture.
 
-In order to gauge how well the model was working, I split my image and steering angle data 80/20 into a training and validation set. I found that my first model had a higher mean squared error on the training set and a slightly higher mean squared error on the validation (0.0737) set but was coming down for 5 epochs at which point it started to increase.  The increase in validation error implies that the model is overfitting so throughout my tests, I kept epochs to a count just below the point when validation started increasing.
+In order to gauge how well the model was working, I split my image and steering angle data 80/20 into a training and validation set. I found that my first model had a higher loss on the training set and a slightly higher loss on the validation (0.0737) set but was coming down for 5 epochs at which point it started to increase.  The increase in validation error implies that the model is overfitting so, throughout my tests, I kept epochs to a count just below the point when validation loss started increasing.
 
 Cropping the data improved the loss slightly (0.0634) but not enough so I next switched to the NVIDIA architecture.
 
@@ -94,9 +96,9 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 51-60) is the NVIDIA architecture consisting of 5 convolutional layers from 24 to 64 followed by a flattening layer and then 4 dense layers with sized 100, 50, 10, and l (model.py lines 51-60) 
+The final model architecture (model.py lines 51-60) is the NVIDIA architecture consisting of 5 convolutional layers from 24 to 64 followed by a flattening layer and then 4 dense layers with sizes 100, 50, 10, and l (model.py lines 51-60) 
 
-The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 51-55), and the data is normalized in the model using a Keras lambda layer (code line 45).  It produces one value which is the steering measurement.
+The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 51-55), and the data is normalized in the model using a Keras lambda layer (code line 45).  The network produces one value which is the steering measurement.
 
 
 #### 3. Creation of the Training Set & Training Process
@@ -105,12 +107,12 @@ To capture good driving behavior, I first recorded a lap on track one using cent
 
 ![alt text][image2]
 
-I later recorded the vehicle swerving from the left side and right sides of the road back to center so that the vehicle would learn to recover when it veered off-course.  I started using the mouse to steer at this point and used it for the remaining of the data gathering sessions. These images show what a recovery looks like starting from:
+I later recorded the vehicle swerving from the left side and right sides of the road back to center so that the vehicle would learn to recover when it veered off-course.  I started using the mouse to steer at this point and used it for the remaining of the data gathering sessions. These images show what a recovery looks like starting from the right side:
 
 ![alt text][image3]
 ![alt text][image4]
 
-To augment the data sat, I also flipped images and angles thinking that this would provide double the data showing steering in the opposite direction since the track is mostly left turns. I also drove around the track in the opposite direction to get samples of reverse turn driving but more variety since I would be controling rather than just exact opposite values and images.  Here are samples of driving in the opposite direction:
+To augment the data sat, I also flipped images and angles thinking that this would provide double the data showing steering in the opposite direction since the track is mostly left turns. I also drove around the track in the opposite direction to get samples of reverse turn driving but with more variation since I was controling rather than just exact opposite values and images.  Here are samples of driving in the opposite direction:
 
 ![alt text][image5]
 ![alt text][image6]
