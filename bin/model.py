@@ -4,7 +4,7 @@ import numpy as np
 
 # Import driving data (images & speed).  Store in numpy arrays (Keras needs this format).
 lines = []
-with open('../data/driving_log.csv') as csvfile:
+with open('../0009-data/driving_log.csv') as csvfile:
   reader = csv.reader(csvfile)
   for line in reader:
     lines.append(line)
@@ -17,7 +17,7 @@ for line in lines:
   source_path = line[0]
   #store the name of the center camera's image
   filename = source_path.split('\\')[-1]
-  current_path = '../data/IMG/' + filename
+  current_path = '../0009-data/IMG/' + filename
   image = cv2.imread(current_path) #retrieve the center camera's image
   images.append(image)
   measurement = float(line[3]) #retrieve the steering adjustment
@@ -61,6 +61,6 @@ model.add( Dense(10) )
 model.add( Dense(1) )
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=3)
+model.fit(X_train, y_train, validation_split=0.3, shuffle=True, nb_epoch=4)
 
 model.save('model.h5')
