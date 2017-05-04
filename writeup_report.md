@@ -22,8 +22,8 @@ The goals / steps of this project are the following:
 [image4]: ./examples/recovery-from-right-2.jpg "Recovery from right"
 [image5]: ./examples/reverse-direction-1.jpg "Reverse driving"
 [image6]: ./examples/reverse-direction-2.jpg "Reverse driving"
-[image7]: ./examples/red-white1.jpg "Track with red/white edges"
-[image8]: ./examples/red-white2.jpg "Track with red/white edges"
+[image7]: ./examples/red-white-1.jpg "Track with red/white edges"
+[image8]: ./examples/red-white-2.jpg "Track with red/white edges"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
