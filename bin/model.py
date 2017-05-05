@@ -15,6 +15,10 @@ with open('../dirt-curbs/driving_log.csv') as csvfile:
   reader = csv.reader(csvfile)
   for line in reader:
     lines.append(line)
+with open('../data/driving_log.csv') as csvfile:
+  reader = csv.reader(csvfile)
+  for line in reader:
+    lines.append(line)
 print("line count: ", len(lines))
 
 # read in training data as is
@@ -56,13 +60,12 @@ model.add( Cropping2D( cropping=((70,25),(0,0)) ) )
 model.add( Convolution2D(24,5,5,subsample=(2,2),activation="relu") )
 model.add( Convolution2D(36,5,5,subsample=(2,2),activation="relu") )
 model.add( Convolution2D(48,5,5,subsample=(2,2),activation="relu") )
-#model.add( Convolution2D(64,3,3,activation="relu") )
-#model.add( Convolution2D(64,3,3,activation="relu") )
+model.add( Convolution2D(64,3,3,activation="relu") )
+model.add( Convolution2D(64,3,3,activation="relu") )
 model.add( Flatten() )
 model.add( Dense(100) )
-#model.add( Dropout( 0.05) )
 model.add( Dense(50) )
-model.add( Dropout(0.05) )
+model.add( Dropout(0.1) )
 model.add( Dense(10) )
 model.add( Dense(1) )
 
