@@ -4,18 +4,22 @@ import csv
 # Import driving data (images & speed).  Store in numpy arrays (Keras needs this format).
 samples = []
 
-with open('../data-fastest/driving_log.csv') as csvfile:
+with open('../data-udacity/data/driving_log.csv') as csvfile:
   reader = csv.reader(csvfile)
   for line in reader:
     samples.append(line)
-with open('../data-red-white-track/driving_log.csv') as csvfile:
-  reader = csv.reader(csvfile)
-  for line in reader:
-    samples.append(line)
-with open('../data/driving_log.csv') as csvfile:
-  reader = csv.reader(csvfile)
-  for line in reader:
-    samples.append(line)
+#with open('../data-fastest/driving_log.csv') as csvfile:
+#  reader = csv.reader(csvfile)
+#  for line in reader:
+#    samples.append(line)
+#with open('../data-red-white-track/driving_log.csv') as csvfile:
+#  reader = csv.reader(csvfile)
+#  for line in reader:
+#    samples.append(line)
+#with open('../data/driving_log.csv') as csvfile:
+#  reader = csv.reader(csvfile)
+#  for line in reader:
+#    samples.append(line)
 print("line count: ", len(samples))
 
 from sklearn.model_selection import train_test_split
@@ -87,8 +91,8 @@ model.add( Cropping2D( cropping=((70,25),(0,0)) ) )
 model.add( Convolution2D(24,5,5,subsample=(2,2),activation="relu") )
 model.add( Convolution2D(36,5,5,subsample=(2,2),activation="relu") )
 model.add( Convolution2D(48,5,5,subsample=(2,2),activation="relu") )
-model.add( Convolution2D(64,3,3,activation="relu") )
-model.add( Convolution2D(64,3,3,activation="relu") )
+#model.add( Convolution2D(64,3,3,activation="relu") )
+#model.add( Convolution2D(64,3,3,activation="relu") )
 model.add( Flatten() )
 model.add( Dense(100) )
 model.add( Dense(50) )
