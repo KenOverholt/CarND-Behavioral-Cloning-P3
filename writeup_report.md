@@ -44,7 +44,7 @@ Using the Udacity provided simulator and my drive.py file, the car can be driven
 ```sh
 python drive.py model.h5
 ```
-After training with the current data set, the first autonomous drive completed 1+ full laps successfully.  Later runs occasionally got stuck but some have also successfully completed a full lap so the model works but could use further improvement.
+After training with various network architectures and multiple sets of simulation data that I generated, I ended up using the Udacity-provided data with a modified architecture in order to complete a full lap around track one.
 
 #### 3. Submission code is usable and readable
 
@@ -54,19 +54,19 @@ The model.py file contains the code for training and saving the convolution neur
 
 #### 1. An appropriate model architecture has been employed
 
-My model is the NVIDIA architecture consisting of 5 convolutional layers from 24 to 64 followed by a flattening layer and then 4 dense layers with sized 100, 50, 10, and l (model.py lines 51-60) 
+My model is a modified version of the NVIDIA architecture consisting of 3 convolutional layers from 24 to 48 followed by a flattening layer and then 3 dense layers with sizes 100, 50, and 10.  Next is a dropout later with 5% dropout followed by a dense layer size l (model.py lines 97-107) 
 
-The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 51-55) and the data is normalized in the model using a Keras lambda layer (code line 45). 
+The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 97-99) and the data is normalized in the model using a Keras lambda layer (code line 91). 
 
 #### 2. Attempts to reduce overfitting in the model
 
-Epochs were kept low at 3 to 5 (code line 63) depending on the training session.  This kept the validation loss from rising in order to reduce overfitting. 
+I kept epochs low at 5 (code line 113).  This kept the validation loss from rising in order to reduce overfitting.  I also introduced a 5% dropout layer before the final dense layer to help reduce overfitting as well. 
 
-The model was trained and validated on different data sets (80/20 split) to ensure that the model was not overfitting (code line 63). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+The model was trained and validated on different data sets (80/20 split) to ensure that the model was not overfitting (code line 27). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
 #### 3. Model parameter tuning
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 62).
+The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 110).
 
 #### 4. Appropriate training data
 
@@ -76,13 +76,15 @@ My initial set was created by just attempting to drive as best I could to get ar
 
 Next I tried adding a lap swerving from side to side attempting to give the network examples of how to correct when veering off course.  I also added a lap of data running in the opposite direction.  For another set of data, I used the Unity engine to modify track one by adding white & red stripes to the edge of the track and I gathered a data set on that custom track.
 
-My final, working set consisted of 1.5 laps around the track mildly swerving from side to side with some driving down the center and, at the spots where the cement curb disappeared, I swerved away from the dirt edge making sure to provide samples indicating dirt edges are to be avoided.
+I had a working model consisting of 1.5 laps around the track mildly swerving from side to side with some driving down the center and, at the spots where the cement curb disappeared, I swerved away from the dirt edge making sure to provide samples indicating dirt edges are to be avoided.  However, when I introduced the dropout layer, the car would not stay on the track for an entire lap.
+
+I ended up using the data set provided by Unity.
 
 ### Model Architecture and Training Strategy
 
 #### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to try use a proven architecture and then, if necessary, modify a layer or two.  I ended up not needing to modify it.
+The overall strategy for deriving a model architecture was to try use a proven architecture and then, if necessary, modify a layer or two.  I ended up removing the the final 2 convolution layers and adding a droput layer.
 
 My first step was to try LeNet because that worked well in the sign classification project and is a well-known architecture.
 
@@ -90,15 +92,35 @@ In order to gauge how well the model was working, I split my image and steering 
 
 Cropping the data improved the loss slightly (0.0634) but not enough so I next switched to the NVIDIA architecture.
 
-NVIDIA produced loss on the order of 0.0051 which is significantly lower but the car still didn't stay on the track all the way around until I changed my traning data.
+NVIDIA produced loss on the order of 0.0051 which is significantly lower but the car still didn't stay on the track all the way around until I changed my traning data.  However, once I added the dropout layer, the car could not stay on the track.
 
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+I tried experimenting with combinations of the 4 data sets I had gathered with various modfications to the NVIDIA architecture but none of them would keep the car on the track.  Using all the data sets caused the system to run out of memory so I introduced a generator which broke the training up into small batches reducing the memory footprint and allowing the large data set to run.
+
+My final approach was to use the Unity-provided data set on a pared-down version of the NVIDIA architecture.  At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 51-60) is the NVIDIA architecture consisting of 5 convolutional layers from 24 to 64 followed by a flattening layer and then 4 dense layers with sizes 100, 50, 10, and l (model.py lines 51-60) 
+The final model architecture (model.py lines 97-107) is a modification of the NVIDIA architecture.  My archicture consists of 3 convolutional layers from 24 to 48 followed by a flattening layer and then 4 dense layers with sizes 100, 50, 10, and l (model.py lines 103-107).  There is a 5% droput layer (code line 106) before the last dense layer.
 
-The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 51-55), and the data is normalized in the model using a Keras lambda layer (code line 45).  The network produces one value which is the steering measurement.
+The model includes RELU activations for the convolutional layers to introduce nonlinearity (code lines 97-99), and the data is normalized in the model using a Keras lambda layer (code line 91).  The network produces one value which is the steering angle required to keep the car on the track.
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input               | 160x320x3 color jpg image
+| Normalization       | Adjust values to between -0.5 and 0.5
+| Cropping         		| remove top 75 and bottom 25 rows for 65x320x3 color jpg image | 
+| Convolution 5x5     | 2x2 stride, valid padding 	              |
+| RELU					      |	activation						                    |
+| Convolution 5x5	    | 2x2 stride, valid padding      						|
+| RELU		            | activation					                      |
+| Convolution 5x5			| 2x2 stride, valid padding    							|
+| RELU                | activation                                |
+|	Flatten					    |			          									|
+|	Dense     					| outputs 100												|
+| Dense               | outputs 50        |
+| Dense               | outputs 10 |
+| Dropout 5%          |         |
+| Dense               | outputs 1                                 |
 
 
 #### 3. Creation of the Training Set & Training Process
@@ -116,6 +138,8 @@ To augment the data sat, I also flipped images and angles thinking that this wou
 
 ![alt text][image5]
 ![alt text][image6]
+
+Another augmentation I tried was to use the images from the left and right camera.  I used that data and modified the angles slightly allowing the network to use these images as if they were in the center.
 
 I noticed my car would sometimes drive into the red & white edges so I used the Unity engine to modify track one by adding red & white edges all around the cement curb.  Here is a sample of those images:
 
